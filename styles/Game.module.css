@@ -1,0 +1,24 @@
+
+.container {
+    display: flex;
+    align-items: flex-start;
+    padding: 1rem;
+}
+
+.team {
+    display: flex;
+}
+
+.board {
+    display: flex;
+    flex: 1 1 0;
+    flex-wrap: wrap;
+    padding: 0 1rem;
+}
+
+.tile {
+    flex: 0 0 20%;
+    height: 120px;
+    background: gray;
+    border: 2px solid black;
+}
