@@ -1,5 +1,5 @@
 import styles from '@/styles/GameCard.module.css'
-import { IconFlare, IconMoodSad2, IconBrandSketch, IconSkull, IconSpy } from '@tabler/icons';
+import { IconFlare, IconNumber0, IconBrandSketch, IconSkull, IconSpy } from '@tabler/icons';
 
 export enum GameCardType {
     RED = 'red',
@@ -33,7 +33,7 @@ export default function TeamCard({text, type, opened}: GameCardProps) {
                         <IconBrandSketch size={80}/>
                     }
                     {type === GameCardType.NEUTRAL &&
-                        <IconMoodSad2 size={80}/>
+                        <IconNumber0 size={80}/>
                     }
                     {type === GameCardType.DEATH &&
                         <IconSkull size={80}/>
