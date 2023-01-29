@@ -44,30 +44,3 @@
     margin-top: 10px;
     color: rgb(209, 44, 44);
 }
-
-.lobby {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.cards {
-    display: flex;
-    align-items: center;
-}
-
-.versus {
-    font-family: 'Rubik Vinyl', cursive;
-    font-size: 3rem;
-    margin: 0 5rem;
-}
-
-.users {
-    position: absolute;
-    top: 5%;
-    right: 5%;
-}
-
-.startGame {
-    margin-top: 20px;
-}

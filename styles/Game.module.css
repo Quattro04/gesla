@@ -1,9 +1,62 @@
+.main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+}
 
 .container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-direction: column;
+    padding: 1rem;
+}
+
+.gameContainer {
+    width: 100%;
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
     padding: 1rem;
+}
+  
+.title {
+    font-family: 'Rubik Vinyl', cursive;
+    font-size: 7rem;
+    margin: 0 0 2rem;
+}
+
+.lobby {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.cards {
+    display: flex;
+    align-items: center;
+}
+
+.versus {
+    font-family: 'Rubik Vinyl', cursive;
+    font-size: 3rem;
+    margin: 0 5rem;
+}
+
+.users {
+    position: absolute;
+    top: 5%;
+    right: 5%;
+}
+
+.startGame {
+    margin-top: 20px;
+}
+
+.error {
+    margin-top: 10px;
+    color: rgb(209, 44, 44);
 }
 
 .team {
@@ -12,7 +65,7 @@
 
 .board {
     display: flex;
-    flex: 1 1 0;
+    flex: 5 5 0;
     flex-wrap: wrap;
     padding: 0 1rem;
     max-width: 1100px;
@@ -22,4 +75,22 @@
     flex: 0 0 20%;
     height: 150px;
     cursor: pointer;
+}
+
+.sideContainer {
+    flex: 1 1 0;
+    height: 750px;
+    display: flex;
+    flex-direction: column;
+}
+
+@media only screen and (max-width: 1600px) {
+    .gameCardOuterWrapper {
+        flex: 0 0 20%;
+        height: 120px;
+    }
+
+    .sideContainer {
+        width: 150px;
+    }
 }

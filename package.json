@@ -28,7 +28,12 @@
     "next": "13.1.2",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "react-toastify": "^9.1.1",
     "swr": "^2.0.1",
-    "typescript": "4.9.4"
+    "typescript": "4.9.4",
+    "uuid4": "^2.0.3"
+  },
+  "devDependencies": {
+    "@types/uuid4": "^2.0.0"
   }
 }

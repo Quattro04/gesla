@@ -9,6 +9,19 @@
     position: relative;
 }
 
+.gameCardWrapper.red {
+    background-color: #ad6c66;
+}
+.gameCardWrapper.blue {
+    background-color: #6582a4;
+}
+.gameCardWrapper.neutral {
+    background-color: #7a7a7a;
+}
+.gameCardWrapper.death {
+    background-color: #4f4f4f;
+}
+
 .gameCardWrapperOpened {
     animation-name: rotateGameCard;
     animation-duration: 1.2s;
@@ -26,11 +39,25 @@
     border-radius: 8px;
 }
 
+.red .gameCard {
+    background-color: #c92a2a;
+}
+.blue .gameCard {
+    background-color: #1864ab;
+}
+.neutral .gameCard {
+    background-color: #555555;
+}
+.death .gameCard {
+    background-color: #000000;
+}
+
 .upper {
     width: 100%;
     display: flex;
     align-items: center;
     padding: 10px 0;
+    opacity: 0.6;
 }
 
 .line {
@@ -75,22 +102,27 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 8px solid #9f9f9f;
     border-radius: 8px;
     opacity: 0.5;
 }
 
-.red {
+.overlayOpened.red {
     background-color: #c92a2a;
 }
-.blue {
+.overlayOpened.blue {
     background: #1864ab;
 }
-.neutral {
-    background: rgb(85, 85, 85);
+.overlayOpened.neutral {
+    background: #555555;
 }
-.death {
-    background: black;
+.overlayOpened.death {
+    background: #000000;
+}
+
+@media only screen and (max-width: 1600px) {
+    .text {
+        font-size: .7rem;
+    }
 }
 
 @keyframes rotateGameCard {

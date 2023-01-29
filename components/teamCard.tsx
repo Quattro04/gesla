@@ -1,3 +1,4 @@
+import useResizeHandler from "@/hooks/use-resize-handler";
 import { Badge, Button, Card, Group, Text, createStyles } from "@mantine/core";
 
 const useStyles = createStyles((theme) => ({
@@ -6,7 +7,6 @@ const useStyles = createStyles((theme) => ({
     },
 
     headingRed: {
-        minWidth: '250px',
         borderBottom: `1px solid ${
           theme.colorScheme === 'dark' ? theme.colors.dark[4] : theme.colors.gray[3]
         }`,
@@ -18,7 +18,6 @@ const useStyles = createStyles((theme) => ({
     },
 
     headingBlue: {
-        minWidth: '250px',
         borderBottom: `1px solid ${
           theme.colorScheme === 'dark' ? theme.colors.dark[4] : theme.colors.gray[3]
         }`,
@@ -40,12 +39,12 @@ const useStyles = createStyles((theme) => ({
     },
   
     section: {
-      borderBottom: `1px solid ${
-        theme.colorScheme === 'dark' ? theme.colors.dark[4] : theme.colors.gray[3]
-      }`,
-      paddingLeft: theme.spacing.md,
-      paddingRight: theme.spacing.md,
-      paddingBottom: theme.spacing.md,
+        borderBottom: `1px solid ${
+            theme.colorScheme === 'dark' ? theme.colors.dark[4] : theme.colors.gray[3]
+        }`,
+        paddingLeft: theme.spacing.md,
+        paddingRight: theme.spacing.md,
+        paddingBottom: theme.spacing.md,
     },
 
     badge: {
@@ -53,7 +52,16 @@ const useStyles = createStyles((theme) => ({
     },
 
     freeBadge: {
+        color: 'white',
         background: theme.colors.green
+    },
+    redBadge: {
+        color: 'white',
+        background: theme.colors.red
+    },
+    blueBadge: {
+        color: 'white',
+        background: theme.colors.blue
     },
 
     become: {
@@ -66,27 +74,47 @@ interface TeamCardProps {
     op?: string;
     spy?: string;
     changeRole?: (role: string) => void;
+    cardsLeft?: number
 }
 
-interface Team {}
-
-export default function TeamCard({team, op, spy, changeRole}: TeamCardProps) {
+export default function TeamCard({team, op, spy, changeRole, cardsLeft}: TeamCardProps) {
 
     const { classes } = useStyles();
+
+    const { screenSize } = useResizeHandler()
+
+    const getBadgeClass = (role: string) => {
+        if (role === 'op') {
+            if (!op) return classes.freeBadge
+            if (team === 'red') return classes.redBadge
+            return classes.blueBadge
+        } else {
+            if (!spy) return classes.freeBadge
+            if (team === 'red') return classes.redBadge
+            return classes.blueBadge
+        }
+    }
 
     return (
         <Card withBorder radius="md">
             <Card.Section className={classes[team === 'red' ? 'headingRed' : 'headingBlue']} mt="md">
-                <Text size="lg" weight={500}>
-                    {team === 'blue' ? 'Modra ekipa' : 'Rdeča ekipa'}
-                </Text>
+                <Group position="apart">
+                    <Text size={screenSize === 'desktop' ? 'lg' : 'sm'} weight={500}>
+                        {team === 'blue' ? 'Modra ekipa' : 'Rdeča ekipa'}
+                    </Text>
+                    {cardsLeft !== undefined && (
+                        <Badge size={screenSize === 'desktop' ? 'lg' : 'sm'}>
+                            {cardsLeft}
+                        </Badge>
+                    )}
+                </Group>
             </Card.Section>
             <Card.Section className={classes.section} mt="md">
                 <Group position="apart">
-                    <Text size="lg" weight={500}>
+                    <Text size={screenSize === 'desktop' ? 'lg' : 'sm'} weight={500}>
                         Vohun
                     </Text>
-                    <Badge className={`${classes.badge} ${!op ? classes.freeBadge : ''}`} size="lg">
+                    <Badge className={`${classes.badge} ${getBadgeClass('op')}`} size={screenSize === 'desktop' ? 'lg' : 'sm'}>
                         {op ? op : 'Prosto'}
                     </Badge>
                 </Group>
@@ -98,10 +126,10 @@ export default function TeamCard({team, op, spy, changeRole}: TeamCardProps) {
             </Card.Section>
             <Card.Section className={classes.section} mt="md">
                 <Group position="apart">
-                    <Text size="lg" weight={500}>
+                    <Text size={screenSize === 'desktop' ? 'lg' : 'sm'} weight={500}>
                         Vodja
                     </Text>
-                    <Badge className={`${classes.badge} ${!spy ? classes.freeBadge : ''}`} size="lg">
+                    <Badge className={`${classes.badge} ${getBadgeClass('spy')}`} size={screenSize === 'desktop' ? 'lg' : 'sm'}>
                         {spy ? spy : 'Prosto'}
                     </Badge>
                 </Group>

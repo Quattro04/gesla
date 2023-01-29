@@ -1,0 +1,14 @@
+.middleText {
+    margin: 0 5px;
+}
+
+.logContainerOuter {
+    height: 100%;
+    position: relative;
+}
+
+.logContainerinner {
+    width: 100%;
+    position: absolute;
+    bottom: 0;
+}
