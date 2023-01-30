@@ -2,7 +2,6 @@ import { useCallback, useEffect, useState } from "react";
 import styles from '@/styles/Game.module.css'
 import TeamCard from "@/components/teamCard";
 import GameCard, { GameCardProps, GameCardType } from "@/components/gameCard";
-import useSWR from 'swr';
 import useAblyConnect from "@/hooks/use-ably-connect";
 import * as Ably from 'ably/promises'
 import GameLog, { GameLogType } from '@/components/gameLog';
@@ -40,12 +39,12 @@ const presenceActionIcon = new Map<string, string>([
     ['leave', '🔴']
 ])
 
+const words = ["Akne","Dodatek","Oglašujte","Letalo","Prehod","Aligator","Abeceda","Amerika","Gleženj","Depresija","Aplavz","Jabolčna omaka","Aplikacija","Arheolog","Aristokrat","Roka","Armada","Spati","Astronavt","Športnik","Atlantis","Teta","Avokado","Varuška","Hrbtenica","Torba","Bagueta","Plešast","Balon","Banana","Ograja","Golf","Podstavki","Košarka","Netopir","Baterija","Plaža","Fižolovo steblo","Posteljna stenica","Pivo","Beethoven","Pas","Oprsnica","Velik","Kolo","Oglasna deska","Ptica","Rojstni dan","Ugriz","Kovač","Odeja","Belilo","Brisalec","Cveteti","Načrt","Top","Zameglitev","Boja","Čoln","Bob","Telo","Bomba","Pokrov motorja","Knjiga","Metuljček","Škatla","Fant","Znamka","Pogumno","Nevesta","Most","Brokoli","Zlomljena","Metla","Modrica","Rjavolaska","Mehurček","Kolega","Bivol","Žarnica","Zajček","Avtobus","Nakup","Kabina","Kavarna","Torta","Kalkulator","Kamp","Lahek","Kanada","Sveča","Sladkarije","Kapa","Kapitalizem","Avto","Karton","Kartografija","Mačka","Cd","Strop","Celica","Stoletje","Stol","Kreda","Prvak","Polnilec","Navijačica","Kuhar","Šah","Žvečiti","Piščanec","Zvonec","Kitajska","Čokolada","Cerkev","Cirkus","Glina","Pečina","Plašč","Urni mehanizem","Klovn","Namig","Trener","Premog","Podstavek za kozarce","Zobnik","Hladno","Fakulteta","Udobje","Računalnik","Stožec","Pogovor","Kuhanje","Vrvica","Otroška posteljica","Kašelj","Krava","Kavboj","Barvica","Krema","Hrustljavo","Kritizirati","Vrana","Križarjenje","Drobtina","Skorja","Manšeta","Zavesa","Obnohtna kožica","Car","Oče","Pikado","Zora","Dan","Globoko","Napaka","Zob","Zobozdravnik","Pisalna miza","Slovar","Jamica","Umazan","Razstaviti","Jarek","Potapljač","Zdravnik","Pes","Pasja uta","Lutka","Domine","Vrata","Pika","Odtok","Risanje","Sanje","Obleka","Pitje","Kapljanje","Bobni","Sušilnik","Raca","Prah","Uho","Jesti","Komolec","Elektrika","Slon","Dvigalo","Pritlikavec","Breza","Motor","Anglija","Ergonomičen","Tekoče stopnice","Evropa","Evolucija","Razširitev","Obrv","Ventilator","Hitro","Pojedina","Ograja","Fevdalizem","Pigment","Prst","Ogenj","Najprej","Ribolov","Popravi","Drog","Flanela","Svetilka","Jata","Cvet","Gripa","Prati","Trepetanje","Megla","Folija","Nogomet","Čelo","Vedno","Štirinajst dni","Francija","Pega","Tovorni promet","Resice","Žaba","Namrščiti se","Galop","Igra","Smeti","Vrt","Bencin","Dragulj","Ingver","Medenjak","Punca","Očala","Škrat","Zlato","Adijo","Dedek","Grozdje","Trava","Hvaležnost","Siva","Zelena","Kitara","Guma","Lasje","Polovica","Ročaj","Rokopis","Obesiti","Srečno","Klobuk","Loputa","Glavobol","Srce","Živa meja","Helikopter","Rob","Skriti se","Hrib","Hokej","Domača naloga","Poskočnica","Konj","Cev","Vroče","Hiša","Objem","Vlažilec","Lačen","Ovira","Poškodba","Koča","Led","Implodirati","Gostilna","Inkvizicija","Pripravnik","Internet","Vabilo","Ironično","Slonokoščena obala","Japonska","Kavbojke","Žele","Jeti","Dnevnik","Skok","Ključ","Morilec","Kilogram","Kralj","Kuhinja","Zmaj","Koleno","Poklekniti","Nož","Vitez","Koala","Čipka","Lestev","Pikapolonica","Zamik","Odlagališče","Krog","Smejati se","Pralnica","Zakon","Travnik","Puščati","Noga","Pismo","Raven","Življenjski slog","Svetloba","Svetlobni meč","Apnenec","Lev","Kuščar","Dnevnik","Kriminalec","Lizika","Ljubezen","Zvestoba","Kosilo","Besedilo","Stroj","Močan","Poštni nabiralnik","Mamut","Mars","Maskota","Jambor","Vžigalica","Vzmetnica","Nered","Mehika","Bližnji vzhod","Mina","Napaka","Moderen","Plesen","Mama","Ponedeljek","Denar","Zaslon","Pošast","Luna","Krpa","Molj","Motorno kolo","Gora","Miška","Kosilnica","Blato","Glasba","Utihniti","Narava","Pogajati se","Sosed","Gnezdo","Nevtron","Nečak","Noč","Nočna mora","Nos","Veslo","Razgled","Pisarna","Olje","Star","Olimpijec","Prozoren","Odpirač","Orbita","Orgle","Organizirati","Zunanji","Zunaj","Vedro","Barva","Pižama","Palača","Hlače","Papir","Parkirati","Parodija","Zabava","Geslo","Pecivo","Figura","Hruška","Pero","Svinčnik","Nihalo","Penis","Kovanec","Poper","Oseba","Filozof","Fotografija","Klavir","Piknik","Mesar","Blazina","Pilot","Ščepec","Vetrnica","Pirat","Karirast","Načrtovati","Deska","Plošča","Igrišče","Plug","Vodovodar","Žep","Točka","Palica","Pumpa","Namizni tenis","Bazen","Prebivalstvo","Pozitiven","Objaviti","Princesa","Odlašati","Protestant","Psiholog","Založnik","Frajer","Kužek","Potisniti","Sestavljanka","Karantena","Kraljica","Živi pesek","Tih","Dirka","Radio","Splav","Drag","Mavrica","Deževnica","Naključen","Žarek","Reciklirati","Rdeča","Obžalovati","Povračilo stroškov","Maščevanje","Rebro","Uganka","Platišča","Drsališče","Valjček","Soba","Roža","Okroglo","Krožišče","Prečka","Žalosten","Varen","Losos","Sol","Peskovnik","Grad iz peska","Sendvič","Satelit","Brazgotina","Prestrašen","Šola","Podlež","Vmešati","Školjka","Sezona","Stavek","Bleščice","Sedež","Gred","Plitek","Šampon","Morski pes","Ovca","Rjuha","Šerif","Brodolomec","Majica","Vezalke","Kratek","Tuš","Skrčiti","Bolan","Počitek","Silhueta","Pevka","Požirek","Skate","Drsanje","Smučanje","Spanje","Počasi","Padec","Kihati","Sneg","Stisniti se","Pesem","Vesolje","Rezervni","Zvočnik","Pajek","Pljuvati","Goba","Spol","Žlica","Pomlad","Škropilnik","Vohun","Kvadrat","Škiljenje","Stopnice","Stati","Zvezda","Država","Delničar","Zavorna luč","Štedilnik","Slepi potnik","Slama","Tok","Racionalizirati","Črta","Študent","Sonce","Sončna opeklina","Suši","Močvirje","Roj","Pulover","Plavanje","Gugalnica","Barometer","Pogovarjati se","Taksi","Učiteljica","Čajnik","Najstnik","Telefon","Deset","Tenis","Tat","Pomisliti","Prestol","Luknja","Grmenje","Plima","Tiger","Čas","Dozirati","Utrujen","Tkivo","Toast","Stranišče","Orodje","Zobna ščetka","Tornado","Turnir","Traktor","Vlak","Zaklad","Drevo","Trikotnik","Izlet","Tovornjak","Kad","Tuba","Prevajalec","Televizija","Vejica","Vrsta","Brezposeln","Nadgradnja","Telovnik","Vizija","Voda","Lubenica","Vosek","Poroka","Varilec","Karkoli","Invalidski voziček","Stepanje","Piščalka","Bela","Lasulja","Volja","Mlin na veter","Zima","Želja","Volk","Volna","Svet","Črv","Ročna ura","Merilo","Mir","Nič","Zadrga","Cona","Živalski vrt"]
+
 export default function Game() {
 
     const [pageState, setPageState] = useState<string>('lobby')
-
     const [username, setUsername] = useState<string>()
-    const { data, error } = useSWR('/api/staticdata', fetcher);
 
     // const [roles, setRoles] = useState<Record<string, string>>({})
     const [gameCards, setGameCards] = useState<GameCardProps[]>([])
@@ -106,7 +105,6 @@ export default function Game() {
     }
 
     const generateCards = () => {
-        const words = data.split('\r\n')
         const typeArray = [
             GameCardType.RED,GameCardType.RED,GameCardType.RED,GameCardType.RED,GameCardType.RED,GameCardType.RED,GameCardType.RED,GameCardType.RED,
             GameCardType.BLUE,GameCardType.BLUE,GameCardType.BLUE,GameCardType.BLUE,GameCardType.BLUE,GameCardType.BLUE,GameCardType.BLUE,GameCardType.BLUE,
@@ -335,14 +333,12 @@ export default function Game() {
 
     useEffect(() => {
         if (gameCards.length > 0) return
-        if (error) console.log('ERROR LOADING DATA FOR CARDS! ', error)
-        // console.log(connectionState, myRole, myTeam)
-        if (data && pageState === 'game' && myRole === 'spy' && myTeam === 'blue') {
+        if (pageState === 'game' && myRole === 'spy' && myTeam === 'blue') {
             console.log('Generating card array ...')
             generateCards()
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [data, error, pageState])
+    }, [pageState])
 
     useEffect(() => {
         if (!!message) {
