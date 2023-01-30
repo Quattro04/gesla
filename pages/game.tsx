@@ -127,7 +127,6 @@ export default function Game() {
         // Shuffle array
         const shuffledCards = shuffle(newGameCards)
         publishMessage('game-board', JSON.stringify(shuffledCards))
-        publishMessage('next-turn', JSON.stringify({ turn: `${turn+1}` }))
     }
 
     const openCard = (index: number) => {
@@ -185,6 +184,11 @@ export default function Game() {
     }
 
     const changeRole = (role: string) => {
+        if (onlineUsers.length < 4) {
+            setStartGameError('Počakajte na vse 4 igralce pred dodeljevanjem vlog')
+            return
+        }
+        setStartGameError('')
         publishMessage('change-role', JSON.stringify({ role }))
     }
 
@@ -197,8 +201,8 @@ export default function Game() {
             setStartGameError('Vse vloge morajo biti zasedene! Potrebujete vsaj 4 igralce.')
             return
         }
-
-        publishMessage('start-game', JSON.stringify({ pageState: 'game' }))
+        console.log('setting to game')
+        setPageState('game')
     }
 
     const handleClick = (index: number, cardText: string, cardColor: string) => {
@@ -257,10 +261,8 @@ export default function Game() {
                     setMyTeam(data.role.includes('blue') ? 'blue' : 'red')
                 }
                 break
-            case 'start-game':
-                setPageState('game')
-                break
             case 'game-board':
+                setPageState('game')
                 setGameCards(data)
                 break
             case 'open-card':
