@@ -129,7 +129,7 @@ export default function Game() {
         publishMessage('game-board', JSON.stringify(shuffledCards))
     }
 
-    const openCard = (index: number) => {
+    const openCard = (index: number, userTeam: string) => {
         const newGameCards = JSON.parse(JSON.stringify(gameCards))
         newGameCards[index].opened = true
         setGameCards(newGameCards)
@@ -138,11 +138,21 @@ export default function Game() {
             if (redTeamCardsLeft-1 === 0) {
                 endGame('red')
             }
+            if (userTeam !== 'red') {
+                nextTurn()
+            }
         } else if (newGameCards[index].type === GameCardType.BLUE) {
             setBlueTeamCardsLeft(blueTeamCardsLeft-1)
             if (blueTeamCardsLeft-1 === 0) {
                 endGame('blue')
             }
+            if (userTeam !== 'blue') {
+                nextTurn()
+            }
+        } else if (newGameCards[index].type === GameCardType.NEUTRAL) {
+            nextTurn()
+        } else if (newGameCards[index].type === GameCardType.DEATH) {
+            endGame(userTeam === 'red' ? 'blue' : 'red')
         }
     }
 
@@ -205,6 +215,12 @@ export default function Game() {
         setPageState('game')
     }
 
+    const nextTurn = () => {
+        const newTurn = turn + 1
+        setTurn(Number(newTurn))
+        setMyTurn(calculateIfMyTurn(newTurn))
+    }
+
     const handleClick = (index: number, cardText: string, cardColor: string) => {
         if (myRole !== 'op' || !myTurn) return
         publishMessage('open-card', JSON.stringify(
@@ -215,16 +231,12 @@ export default function Game() {
                     name: username,
                     team: myTeam
                 },
-                text: 'je odprl',
                 item: {
                     name: cardText,
                     color: cardColor
                 }
             }
         ))
-        if (myTeam !== cardColor) {
-            publishMessage('next-turn', JSON.stringify({ turn: `${turn+1}` }))
-        }
     }
 
     const handleClue = (clue: string) => {
@@ -243,7 +255,6 @@ export default function Game() {
                 }
             }
         ))
-        publishMessage('next-turn', JSON.stringify({ turn: `${turn+1}` }))
     }
 
     const handleChannelMessage = (message: Ably.Types.Message) => {
@@ -264,23 +275,21 @@ export default function Game() {
             case 'game-board':
                 setPageState('game')
                 setGameCards(data)
+                nextTurn()
                 break
             case 'open-card':
-                openCard(Number(data.cardIndex))
+                openCard(Number(data.cardIndex), data.user.team)
                 setGameLog(
                     [
                         ...gameLog,
                         {
                             id: data.id,
                             user: data.user,
-                            text: data.text,
+                            text: 'je odprl',
                             item: data.item
                         }
                     ]
                 )
-                if (gameCards[Number(data.cardIndex)].type === GameCardType.DEATH) {
-                    endGame(data.user.team === 'red' ? 'blue' : 'red')
-                }
                 break
             case 'give-clue':
                 setGameLog(
@@ -294,10 +303,7 @@ export default function Game() {
                         }
                     ]
                 )
-                break
-            case 'next-turn':
-                setTurn(Number(data.turn))
-                setMyTurn(calculateIfMyTurn(data.turn))
+                nextTurn()
                 break
             default:
                 console.error('Unknown channel message name: ' + message.name)
@@ -306,31 +312,8 @@ export default function Game() {
     }
 
     useEffect(() => {
-        // const rl = localStorage.getItem('roles')
-        // if (rl) {
-        //     setRoles(JSON.parse(rl))
-        // }
         const un = localStorage.getItem('username')
         if (un) setUsername(un)
-
-        // if (rl && un) {
-        //     const i = Object.values(JSON.parse(rl)).findIndex(name => name === un)
-        //     if (Object.keys(JSON.parse(rl))[i] === 'blueOp' || Object.keys(JSON.parse(rl))[i] === 'redOp') {
-        //         setMyRole('op')
-        //         if (Object.keys(JSON.parse(rl))[i] === 'blueOp') {
-        //             setMyTeam('blue')
-        //         } else {
-        //             setMyTeam('red')
-        //         }
-        //     } else {
-        //         setMyRole('spy')
-        //         if (Object.keys(JSON.parse(rl))[i] === 'blueSpy') {
-        //             setMyTeam('blue')
-        //         } else {
-        //             setMyTeam('red')
-        //         }
-        //     }
-        // }
     }, [])
 
     useEffect(() => {
@@ -378,9 +361,11 @@ export default function Game() {
                                 changeRole={changeRole}
                             />
                         </div>
-                        <Button className={styles.startGame} color="green" size="md" onClick={() => startGame()}>
-                            Začni igro
-                        </Button>
+                        {myRole === 'spy' && myTeam === 'blue' &&
+                            <Button className={styles.startGame} color="green" size="md" onClick={() => startGame()}>
+                                Začni igro
+                            </Button>
+                        }
                         <span className={styles.error}>{startGameError}</span>
                         <div className={styles.users}>
                             <Card withBorder radius="md">
