@@ -10,5 +10,11 @@
 .logContainerinner {
     width: 100%;
     position: absolute;
+    top: -16px;
     bottom: 0;
+    overflow: auto;
+}
+
+.form {
+    margin: 0 -16px -16px;
 }

@@ -73,11 +73,12 @@ interface TeamCardProps {
     team: "red" | "blue";
     op?: string;
     spy?: string;
+    user?: string;
     changeRole?: (role: string) => void;
     cardsLeft?: number
 }
 
-export default function TeamCard({team, op, spy, changeRole, cardsLeft}: TeamCardProps) {
+export default function TeamCard({team, op, spy, user, changeRole, cardsLeft}: TeamCardProps) {
 
     const { classes } = useStyles();
 
@@ -119,9 +120,18 @@ export default function TeamCard({team, op, spy, changeRole, cardsLeft}: TeamCar
                     </Badge>
                 </Group>
                 {!!changeRole &&
-                    <Button className={classes.become} variant="default" color="gray" onClick={() => changeRole(`${team}Op`)} disabled={!!op}>
-                        Bodi Vohun
-                    </Button>
+                    <>
+                        {op === user &&
+                            <Button className={classes.become} color="red" onClick={() => changeRole('')}>
+                                Prekliči
+                            </Button>
+                        }
+                        {op !== user &&
+                            <Button className={classes.become} color="gray" onClick={() => changeRole(`${team}Op`)} disabled={!!op}>
+                                Bodi Vohun
+                            </Button>
+                        }
+                    </>
                 }
             </Card.Section>
             <Card.Section className={classes.section} mt="md">
@@ -134,9 +144,19 @@ export default function TeamCard({team, op, spy, changeRole, cardsLeft}: TeamCar
                     </Badge>
                 </Group>
                 {!!changeRole &&
-                    <Button className={classes.become} variant="default" color="gray" onClick={() => changeRole(`${team}Spy`)} disabled={!!spy}>
-                        Bodi Vodja
-                    </Button>
+                    <>
+                        {spy === user &&
+                            <Button className={classes.become} color="red" onClick={() => changeRole('')}>
+                                Prekliči
+                            </Button>
+                        }
+                        {spy !== user &&
+                            <Button className={classes.become} color="gray" onClick={() => changeRole(`${team}Spy`)} disabled={!!spy}>
+                                Bodi Vodja
+                            </Button>
+                        }
+                    </>
+                    
                 }
             </Card.Section>
         </Card>

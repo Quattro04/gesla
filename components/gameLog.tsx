@@ -1,4 +1,4 @@
-import React, { FormEvent, ReactNode, useState } from "react";
+import React, { FormEvent, ReactNode, useEffect, useRef, useState } from "react";
 import { Badge, TextInput, Card, Text, createStyles } from "@mantine/core";
 import styles from '@/styles/GameLog.module.css'
 import useResizeHandler from "@/hooks/use-resize-handler";
@@ -57,7 +57,7 @@ export interface GameLogType {
         team: string;
     }
     text: string;
-    item: {
+    item?: {
         name: string;
         color: string;
     }
@@ -69,6 +69,8 @@ export default function GameLog({ title, userRole, children, style = {}, gameLog
     const [clue, setClue] = useState<string>('')
     const [clueError, setClueError] = useState<string>('')
     const { screenSize } = useResizeHandler()
+
+    const container = useRef<HTMLDivElement>(null)
 
     const getBadgeClass = (color: string) => {
         if (color === 'red') return classes.redBadge
@@ -93,6 +95,15 @@ export default function GameLog({ title, userRole, children, style = {}, gameLog
         return spl.length === 2 && spl[1].length === 1 && !!Number(spl[1])
     }
 
+    useEffect(() => {
+        if (container && container.current) {
+            const lastItem = container.current.lastElementChild;
+            if (lastItem) {
+                lastItem.scrollIntoView({ behavior: "smooth", block: "nearest" });
+            }
+        }
+    }, [gameLog])
+
     return (
         <Card withBorder radius="md" style={style}>
             <Card.Section className={classes.heading} mt="md">
@@ -102,32 +113,32 @@ export default function GameLog({ title, userRole, children, style = {}, gameLog
             </Card.Section>
             <Card.Section className={`${classes.section} ${classes.sectionBigger}`} mt="md">
                 <div className={styles.logContainerOuter}>
-                    <div className={styles.logContainerinner}>
+                    <div className={styles.logContainerinner} ref={container}>
                         {gameLog.map(log => (
                             <Text key={log.id} size="sm" bg={log.user.team === 'blue' ? "#183550" : "#501818"} py={3} px={10}>
                                 <Badge className={getBadgeClass(log.user.team)} size="sm">
                                     {log.user.name}
                                 </Badge>
                                 <span className={styles.middleText}>{log.text}</span>
-                                <Badge className={getBadgeClass(log.item.color)} size="sm">
-                                    {log.item.name}
-                                </Badge>
+                                {log.item &&
+                                    <Badge className={getBadgeClass(log.item.color)} size="sm">
+                                        {log.item.name}
+                                    </Badge>
+                                }
                             </Text>
                         ))}
                     </div>
                 </div>
             </Card.Section>
             {userRole === 'spy' && (
-                <Card.Section className={classes.section} mt="md">
-                    <form onSubmit={handleSubmit}>
-                        <TextInput
-                            placeholder="Daj namig"
-                            label={clueError}
-                            value={clue}
-                            onChange={(e) => setClue(e.target.value)}
-                        />
-                    </form>
-                </Card.Section>
+                <form className={styles.form} onSubmit={handleSubmit}>
+                    <TextInput
+                        placeholder="Daj namig"
+                        label={clueError}
+                        value={clue}
+                        onChange={(e) => setClue(e.target.value)}
+                    />
+                </form>
             )}
         </Card>
     )

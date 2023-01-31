@@ -16,6 +16,7 @@
 .gameContainer {
     width: 100%;
     display: flex;
+    flex: 1 1 0;
     align-items: flex-start;
     justify-content: space-between;
     padding: 1rem;
@@ -79,7 +80,7 @@
 
 .sideContainer {
     flex: 1 1 0;
-    height: 750px;
+    height: calc(100vh - 2rem);
     display: flex;
     flex-direction: column;
 }
