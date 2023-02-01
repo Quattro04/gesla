@@ -10,6 +10,8 @@ import { Card, Text, Divider, createStyles, Group, Badge, Button } from "@mantin
 import useResizeHandler from "@/hooks/use-resize-handler";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { IconChevronLeft, IconChevronRight } from '@tabler/icons';
+
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
@@ -66,6 +68,9 @@ export default function Game() {
     const [turn, setTurn] = useState<number>(0)
     const [myTurn, setMyTurn] = useState<boolean>(false)
     const [turnTimer, setTurnTimer] = useState<number>()
+
+    const [rightOpened, setRightOpened] = useState<boolean>(false)
+    const [leftOpened, setLeftOpened] = useState<boolean>(false)
 
     const { classes } = useStyles();
 
@@ -346,6 +351,7 @@ export default function Game() {
 
     useEffect(() => {
         if (gameCards.length > 0) return
+        console.log(pageState, myRole, myTeam)
         if (pageState === 'game' && myRole === 'spy' && myTeam === 'blue') {
             console.log('Generating card array ...')
             generateCards()
@@ -382,7 +388,7 @@ export default function Game() {
                                 user={username}
                                 changeRole={changeRole}
                             />
-                            <span className={styles.versus}>VS</span>
+                            {(screenSize === 'desktop' || screenSize === 'tablet') && <span className={styles.versus}>VS</span>}
                             <TeamCard
                                 team="red"
                                 op={redOp}
@@ -418,10 +424,15 @@ export default function Game() {
             )}
             {pageState === 'game' && (
                 <div className={styles.gameContainer}>
-                    <div className={styles.sideContainer}>
+                    {(screenSize === 'mobile' || screenSize === 'xs') &&
+                        <button className={`${styles.openLeft} ${leftOpened ? styles.openLeftOpened : ''}`} onClick={() => setLeftOpened(!leftOpened)}>
+                            <IconChevronRight />
+                        </button>
+                    }
+                    <div className={`${styles.sideContainer} ${styles.sideContainerLeft} ${leftOpened ? styles.sideContainerLeftOpened : ''}`}>
                         <TeamCard team="blue" op={blueOp} spy={blueSpy} cardsLeft={blueTeamCardsLeft} />
                         <br />
-                        <Divider />
+                        {(screenSize === 'desktop' || screenSize === 'tablet') && <Divider />}
                         <br />
                         <Card withBorder radius="md">
                             <Card.Section className={classes.heading} mt="md">
@@ -455,10 +466,15 @@ export default function Game() {
                             </div>
                         ))}
                     </div>
-                    <div className={styles.sideContainer}>
+                    {(screenSize === 'mobile' || screenSize === 'xs') &&
+                        <button className={`${styles.openRight} ${rightOpened ? styles.openRightOpened : ''}`} onClick={() => setRightOpened(!rightOpened)}>
+                            <IconChevronLeft />
+                        </button>
+                    }
+                    <div className={`${styles.sideContainer} ${styles.sideContainerRight} ${rightOpened ? styles.sideContainerRightOpened : ''}`}>
                         <TeamCard team="red" op={redOp} spy={redSpy} cardsLeft={redTeamCardsLeft} />
                         <br />
-                        <Divider />
+                        {(screenSize === 'desktop' || screenSize === 'tablet') && <Divider />}
                         <br />
                         <GameLog
                             title="Potek igre"

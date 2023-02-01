@@ -3,6 +3,7 @@
     flex-direction: column;
     align-items: center;
     min-height: 100vh;
+    position: relative;
 }
 
 .container {
@@ -37,6 +38,8 @@
 .cards {
     display: flex;
     align-items: center;
+    justify-content: space-between;
+    min-width: 350px;
 }
 
 .versus {
@@ -65,9 +68,9 @@
 }
 
 .board {
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
     flex: 5 5 0;
-    flex-wrap: wrap;
     padding: 0 1rem;
     max-width: 1100px;
 }
@@ -85,7 +88,35 @@
     flex-direction: column;
 }
 
-@media only screen and (max-width: 1600px) {
+.openRight {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    z-index: 90;
+    transition: transform .5s;
+}
+.openRightOpened {
+    transform: rotate(180deg);
+}
+.openLeft {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    z-index: 90;
+    transition: transform .5s;
+}
+.openLeftOpened {
+    transform: rotate(180deg);
+}
+
+@media only screen and (max-width: 1200px) {
+    /* .board {
+        width: 100%;
+        flex: 1 1 0;
+    } */
+    .gameContainer {
+        padding: 0;
+    }
     .gameCardOuterWrapper {
         flex: 0 0 20%;
         height: 120px;
@@ -93,5 +124,28 @@
 
     .sideContainer {
         width: 150px;
+        position: absolute;
+        z-index: 100;
+        top: 0;
+    }
+    .sideContainerLeft {
+        left: -100%;
+        transition: left .5s;
+    }
+    .sideContainerRight {
+        right: -100%;
+        transition: right .5s;
+    }
+    .sideContainerLeftOpened {
+        left: 0
+    }
+    .sideContainerRightOpened {
+        right: 0
+    }
+}
+
+@media only screen and (max-width: 800px) {
+    .gameCardOuterWrapper {
+        height: 80px;
     }
 }

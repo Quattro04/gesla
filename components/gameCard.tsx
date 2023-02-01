@@ -25,7 +25,7 @@ export default function TeamCard({text, type, opened, forRole}: GameCardProps) {
             <div className={styles.gameCard}>
                 <div className={styles.upper}>
                     <div className={styles.line}></div>
-                    <IconSpy size={screenSize === 'desktop' ? 40 : 30} />
+                    <IconSpy size={screenSize === 'desktop' ? 40 : (screenSize === 'xs' ? 20 : 30)} />
                 </div>
                 <span className={styles.text}>{text}</span>
             </div>

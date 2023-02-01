@@ -17,8 +17,11 @@ export default function useResizeHandler(): UseResizeHandlerReturn {
             if (window.innerWidth >= 1200 && window.innerWidth < 1600) {
                 setScreenSize('tablet')
             }
-            if (window.innerWidth < 1200) {
+            if (window.innerWidth >= 800 && window.innerWidth < 1200) {
                 setScreenSize('mobile')
+            }
+            if (window.innerWidth < 800) {
+                setScreenSize('xs')
             }
         }
 
