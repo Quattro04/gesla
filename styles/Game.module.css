@@ -109,11 +109,7 @@
     transform: rotate(180deg);
 }
 
-@media only screen and (max-width: 1200px) {
-    /* .board {
-        width: 100%;
-        flex: 1 1 0;
-    } */
+/* @media only screen and (max-width: 1200px) {
     .gameContainer {
         padding: 0;
     }
@@ -148,4 +144,4 @@
     .gameCardOuterWrapper {
         height: 80px;
     }
-}
+} */
