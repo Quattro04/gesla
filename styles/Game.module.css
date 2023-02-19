@@ -2,12 +2,13 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    min-height: 100vh;
+    height: 100vh;
     position: relative;
     overflow: auto;
 }
 
 .container {
+    width: 100%;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -27,10 +28,11 @@
 .title {
     font-family: 'Rubik Vinyl', cursive;
     font-size: 7rem;
-    margin: 0 0 2rem;
+    margin: 0 0 1rem;
 }
 
 .lobby {
+    width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -40,7 +42,9 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    min-width: 350px;
+    flex-wrap: wrap;
+    width: 100%;
+    max-width: 350px;
 }
 
 .versus {
@@ -50,9 +54,11 @@
 }
 
 .users {
-    position: absolute;
-    top: 5%;
-    right: 5%;
+    display: flex;
+    margin-bottom: 1rem;
+}
+.users span {
+    margin: 0 10px;
 }
 
 .startGame {
@@ -68,12 +74,31 @@
     display: flex;
 }
 
+.sidesMobile {
+    display: flex;
+    flex: 1 1 0;
+    padding: 20px;
+}
+
+.boardWrapper {
+    display: flex;
+    flex-direction: column;
+    flex: 5 5 0;
+    max-width: 1100px;
+    height: 100vh;
+}
+
 .board {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
-    flex: 5 5 0;
     padding: 0 1rem;
-    max-width: 1100px;
+}
+
+.gameLogWrapper {
+    flex: 1 1 0;
+    display: flex;
+    flex-direction: column;
+    margin-left: 10px;
 }
 
 .gameCardOuterWrapper {
@@ -110,39 +135,22 @@
     transform: rotate(180deg);
 }
 
-/* @media only screen and (max-width: 1200px) {
+
+@media only screen and (max-width: 1200px) {
+    .title {
+        font-size: 4rem;
+    }
     .gameContainer {
         padding: 0;
     }
     .gameCardOuterWrapper {
         flex: 0 0 20%;
-        height: 120px;
-    }
-
-    .sideContainer {
-        width: 150px;
-        position: absolute;
-        z-index: 100;
-        top: 0;
-    }
-    .sideContainerLeft {
-        left: -100%;
-        transition: left .5s;
-    }
-    .sideContainerRight {
-        right: -100%;
-        transition: right .5s;
-    }
-    .sideContainerLeftOpened {
-        left: 0
-    }
-    .sideContainerRightOpened {
-        right: 0
+        height: 80px;
     }
 }
 
-@media only screen and (max-width: 800px) {
-    .gameCardOuterWrapper {
-        height: 80px;
+@media only screen and (max-width: 400px) {
+    .cards {
+        justify-content: center;
     }
-} */
+}

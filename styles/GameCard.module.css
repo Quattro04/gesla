@@ -119,12 +119,7 @@
     background: #000000;
 }
 
-/* @media only screen and (max-width: 1200px) {
-    .text {
-        font-size: .7rem;
-    }
-}
-@media only screen and (max-width: 800px) {
+@media only screen and (max-width: 1200px) {
     .gameCardWrapper {
         padding: 0;
     }
@@ -136,7 +131,7 @@
         font-size: .5rem;
         border-radius: 0 0 10px 10px;
     }
-} */
+}
 
 @keyframes rotateGameCard {
     0%      {transform: rotateY(0deg);}

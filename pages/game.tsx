@@ -77,6 +77,9 @@ export default function Game() {
     const { connectionState, message, onlineUsers, publishMessage } = useAblyConnect({ username })
     const { screenSize } = useResizeHandler()
 
+    const [devModeCount, setDevModeCount] = useState<number>(0)
+
+
     const notifyNewRound = () => {
         if (calculateWhosTurn().team === 'red') {
             toast.error(`Runda ${turn}: ${calculateWhosTurn().user} mora ${calculateWhosTurn().role === 'op' ? 'odkriti kartice' : 'dati namig'}`)
@@ -225,6 +228,15 @@ export default function Game() {
         const newTurn = turn + 1
         setTurn(Number(newTurn))
         setMyTurn(calculateIfMyTurn(newTurn))
+    }
+
+    const titleClick = () => {
+        console.log(devModeCount)
+        if (devModeCount === 3) {
+            setPageState('game')
+            generateCards()
+        }
+        setDevModeCount(prev => prev + 1)
     }
 
     const endTurn = () => {
@@ -378,7 +390,16 @@ export default function Game() {
             <ToastContainer position="top-center" theme="colored" />
             {pageState === 'lobby' && (
                 <div className={styles.container}>
-                    <h1 className={styles.title}>GESLA</h1>
+                    <h1 className={styles.title} onClick={() => titleClick()}>GESLA</h1>
+                    <div className={styles.users}>
+                        {onlineUsers.map((username: string) => {
+                            return (
+                                <span key={username}>
+                                    {presenceActionIcon.get('enter')} {username}
+                                </span>
+                            )
+                        })}
+                    </div>
                     <div className={styles.lobby}>
                         <div className={styles.cards}>
                             <TeamCard
@@ -397,93 +418,110 @@ export default function Game() {
                                 changeRole={changeRole}
                             />
                         </div>
-                        {myRole === 'spy' && myTeam === 'blue' &&
-                            <Button className={styles.startGame} color="green" size="md" onClick={() => startGame()}>
-                                Začni igro
-                            </Button>
-                        }
+                        <Button className={styles.startGame} color="green" size="md" onClick={() => startGame()} disabled={myRole !== 'spy' || myTeam !== 'blue'}>
+                            Začni igro
+                        </Button>
                         <span className={styles.error}>{startGameError}</span>
-                        <div className={styles.users}>
-                            <Card withBorder radius="md">
-                                <Card.Section className={classes.heading}>
-                                    <Text size="lg" weight={500}>
-                                        Uporabniki
-                                    </Text>
-                                </Card.Section>
-                                <Card.Section className={classes.heading}>
-                                    {onlineUsers.map((username: string) => {
-                                        return <Text size="md" key={username}>
-                                            {presenceActionIcon.get('enter')} {username}
-                                        </Text>
-                                    })}
-                                </Card.Section>
-                            </Card>
-                        </div>
                     </div>
                 </div>
             )}
             {pageState === 'game' && (
                 <div className={styles.gameContainer}>
-                    {(screenSize === 'mobile' || screenSize === 'xs') &&
-                        <button className={`${styles.openLeft} ${leftOpened ? styles.openLeftOpened : ''}`} onClick={() => setLeftOpened(!leftOpened)}>
-                            <IconChevronRight />
-                        </button>
-                    }
-                    <div className={`${styles.sideContainer} ${styles.sideContainerLeft} ${leftOpened ? styles.sideContainerLeftOpened : ''}`}>
-                        <TeamCard team="blue" op={blueOp} spy={blueSpy} cardsLeft={blueTeamCardsLeft} />
-                        <br />
-                        {(screenSize === 'desktop' || screenSize === 'tablet') && <Divider />}
-                        <br />
-                        <Card withBorder radius="md">
-                            <Card.Section className={classes.heading} mt="md">
-                                <Group position="apart">
-                                    <Text size={screenSize === 'desktop' ? 'lg' : 'sm'} weight={500}>
-                                        Runda {turn}
-                                    </Text>
-                                    {myRole === 'op' && myTurn &&
+                    {(screenSize === 'desktop' || screenSize === 'tablet') &&
+                        <div className={styles.sideContainer}>
+                            <TeamCard team="blue" op={blueOp} spy={blueSpy} cardsLeft={blueTeamCardsLeft} />
+                            <br />
+                            <Divider />
+                            <br />
+                            <Card withBorder radius="md">
+                                <Card.Section className={classes.heading} mt="md">
+                                    <Group position="apart">
+                                        <Text size="lg" weight={500}>
+                                            Runda {turn}
+                                        </Text>
+                                    </Group>
+                                </Card.Section>
+                                <Card.Section className={classes.section} mt="md">
+                                    <Group position="apart">
+                                        <Text size="lg" weight={500}>
+                                            Na potezi
+                                        </Text>
+                                        <Badge size="lg" style={{background: calculateWhosTurn().team === 'blue' ? '#1864ab' : '#c92a2a'}}>
+                                            {calculateWhosTurn().user} ({calculateWhosTurn().role === 'op' ? 'Vohun' : 'Vodja'})
+                                        </Badge>
+                                    </Group>
+                                </Card.Section>
+                                {myRole === 'op' && myTurn &&
+                                    <Card.Section className={classes.section} mt="md">
                                         <Button size="sm" color="gray" onClick={endTurn}>
                                             Končaj rundo
                                         </Button>
-                                    }
-                                </Group>
-                            </Card.Section>
-                            <Card.Section className={classes.section} mt="md">
-                                <Group position="apart">
-                                    <Text size={screenSize === 'desktop' ? 'lg' : 'sm'} weight={500}>
-                                        Na potezi
-                                    </Text>
-                                    <Badge size={screenSize === 'desktop' ? 'lg' : 'sm'} style={{background: calculateWhosTurn().team === 'blue' ? '#1864ab' : '#c92a2a'}}>
-                                        {calculateWhosTurn().user} ({calculateWhosTurn().role === 'op' ? 'Vohun' : 'Vodja'})
-                                    </Badge>
-                                </Group>
-                            </Card.Section>
-                        </Card>
-                    </div>
-                    <div className={styles.board}>
-                        {gameCards.map((card, i) => (
-                            <div key={card.text} className={styles.gameCardOuterWrapper} onClick={() => handleClick(i, card.text, card.type)}>
-                                <GameCard text={card.text} type={card.type} opened={card.opened} forRole={myRole} />
-                            </div>
-                        ))}
-                    </div>
-                    {(screenSize === 'mobile' || screenSize === 'xs') &&
-                        <button className={`${styles.openRight} ${rightOpened ? styles.openRightOpened : ''}`} onClick={() => setRightOpened(!rightOpened)}>
-                            <IconChevronLeft />
-                        </button>
+                                    </Card.Section>
+                                }
+                            </Card>
+                        </div>
                     }
-                    <div className={`${styles.sideContainer} ${styles.sideContainerRight} ${rightOpened ? styles.sideContainerRightOpened : ''}`}>
-                        <TeamCard team="red" op={redOp} spy={redSpy} cardsLeft={redTeamCardsLeft} />
-                        <br />
-                        {(screenSize === 'desktop' || screenSize === 'tablet') && <Divider />}
-                        <br />
-                        <GameLog
-                            title="Potek igre"
-                            userRole={myRole}
-                            gameLog={gameLog}
-                            style={{display: 'flex', flexDirection: 'column', flex: '1 1 0'}}
-                            onClue={handleClue}
-                        />
+                    <div className={styles.boardWrapper}>
+                        <div className={styles.board}>
+                            {gameCards.map((card, i) => (
+                                <div key={card.text} className={styles.gameCardOuterWrapper} onClick={() => handleClick(i, card.text, card.type)}>
+                                    <GameCard text={card.text} type={card.type} opened={card.opened} forRole={myRole} />
+                                </div>
+                            ))}
+                        </div>
+                        {(screenSize === 'mobile' || screenSize === 'xs') &&
+                            <div className={styles.sidesMobile}>
+                                <Card withBorder radius="md">
+                                    <Card.Section className={classes.heading} mt="md">
+                                        <Group position="apart">
+                                            <Text size="sm" weight={500}>
+                                                Runda {turn}
+                                            </Text>
+                                            {myRole === 'op' && myTurn &&
+                                                <Button size="sm" color="gray" onClick={endTurn}>
+                                                    Končaj rundo
+                                                </Button>
+                                            }
+                                        </Group>
+                                    </Card.Section>
+                                    <Card.Section className={classes.section} mt="md">
+                                        <Group position="apart">
+                                            <Text size="sm" weight={500}>
+                                                Na potezi
+                                            </Text>
+                                            <Badge size="sm" style={{background: calculateWhosTurn().team === 'blue' ? '#1864ab' : '#c92a2a'}}>
+                                                {calculateWhosTurn().user} ({calculateWhosTurn().role === 'op' ? 'Vohun' : 'Vodja'})
+                                            </Badge>
+                                        </Group>
+                                    </Card.Section>
+                                </Card>
+                                <div className={styles.gameLogWrapper}>
+                                    <GameLog
+                                        title="Potek igre"
+                                        userRole={myRole}
+                                        gameLog={gameLog}
+                                        style={{display: 'flex', flexDirection: 'column', flex: '1 1 0'}}
+                                        onClue={handleClue}
+                                    />
+                                </div>
+                            </div>
+                        }
                     </div>
+                    {(screenSize === 'desktop' || screenSize === 'tablet') &&
+                        <div className={styles.sideContainer}>
+                            <TeamCard team="red" op={redOp} spy={redSpy} cardsLeft={redTeamCardsLeft} />
+                            <br />
+                            <Divider />
+                            <br />
+                            <GameLog
+                                title="Potek igre"
+                                userRole={myRole}
+                                gameLog={gameLog}
+                                style={{display: 'flex', flexDirection: 'column', flex: '1 1 0'}}
+                                onClue={handleClue}
+                            />
+                        </div>
+                    }
                 </div>
             )}
         </div>

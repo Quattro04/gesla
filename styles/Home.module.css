@@ -45,3 +45,15 @@
     margin-top: 10px;
     color: rgb(209, 44, 44);
 }
+
+@media only screen and (max-width: 800px) {
+    .main {
+        padding: 2rem;
+    }
+    .title {
+        font-size: 4rem;
+    }
+    .subtitle {
+        font-size: 1rem;
+    }
+}
