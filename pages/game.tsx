@@ -311,6 +311,7 @@ export default function Game() {
                 nextTurn()
                 break
             case 'open-card':
+                if (gameCards[Number(data.cardIndex)].opened) return
                 openCard(Number(data.cardIndex), data.user.team)
                 setGameLog(
                     [
@@ -470,19 +471,13 @@ export default function Game() {
                             ))}
                         </div>
                         {(screenSize === 'mobile' || screenSize === 'xs') &&
+                            <>
                             <div className={styles.sidesMobile}>
                                 <Card withBorder radius="md">
                                     <Card.Section className={classes.heading} mt="md">
-                                        <Group position="apart">
-                                            <Text size="sm" weight={500}>
-                                                Runda {turn}
-                                            </Text>
-                                            {myRole === 'op' && myTurn &&
-                                                <Button size="sm" color="gray" onClick={endTurn}>
-                                                    Končaj rundo
-                                                </Button>
-                                            }
-                                        </Group>
+                                        <Text size="sm" weight={500}>
+                                            Runda {turn}
+                                        </Text>
                                     </Card.Section>
                                     <Card.Section className={classes.section} mt="md">
                                         <Group position="apart">
@@ -494,6 +489,13 @@ export default function Game() {
                                             </Badge>
                                         </Group>
                                     </Card.Section>
+                                    {myRole === 'op' && myTurn &&
+                                        <Card.Section className={classes.section} mt="md">
+                                            <Button size="sm" color="gray" onClick={endTurn}>
+                                                Končaj rundo
+                                            </Button>
+                                        </Card.Section>
+                                    }
                                 </Card>
                                 <div className={styles.gameLogWrapper}>
                                     <GameLog
@@ -505,6 +507,8 @@ export default function Game() {
                                     />
                                 </div>
                             </div>
+                            <div className={styles.spacer} />
+                            </>
                         }
                     </div>
                     {(screenSize === 'desktop' || screenSize === 'tablet') &&
