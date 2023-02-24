@@ -2,10 +2,12 @@ import { useEffect, useState } from "react";
 
 interface UseResizeHandlerReturn {
     screenSize: string;
+    height: number;
 }
 
 export default function useResizeHandler(): UseResizeHandlerReturn {
 
+    const [height, setHeight] = useState<number>(0)
     const [screenSize, setScreenSize] = useState<string>('desktop')
 
     useEffect(() => {
@@ -23,6 +25,7 @@ export default function useResizeHandler(): UseResizeHandlerReturn {
             if (window.innerWidth < 800) {
                 setScreenSize('xs')
             }
+            setHeight(window.innerHeight)
         }
 
         window.addEventListener('resize', resizeHandler)
@@ -32,5 +35,5 @@ export default function useResizeHandler(): UseResizeHandlerReturn {
     }, [])
 
 
-    return { screenSize }
+    return { screenSize, height }
 }

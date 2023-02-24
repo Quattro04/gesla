@@ -61,30 +61,30 @@ export default function Game() {
     const [startGameError, setStartGameError] = useState<string>('')
 
     const [redTeamCardsLeft, setRedTeamCardsLeft] = useState<number>(8)
-    const [blueTeamCardsLeft, setBlueTeamCardsLeft] = useState<number>(8)
+    const [blueTeamCardsLeft, setBlueTeamCardsLeft] = useState<number>(9)
 
     const [gameLog, setGameLog] = useState<GameLogType[]>([])
 
     const [turn, setTurn] = useState<number>(0)
     const [myTurn, setMyTurn] = useState<boolean>(false)
-    const [turnTimer, setTurnTimer] = useState<number>()
-
-    const [rightOpened, setRightOpened] = useState<boolean>(false)
-    const [leftOpened, setLeftOpened] = useState<boolean>(false)
 
     const { classes } = useStyles();
 
     const { connectionState, message, onlineUsers, publishMessage } = useAblyConnect({ username })
-    const { screenSize } = useResizeHandler()
+    const { screenSize, height } = useResizeHandler()
 
     const [devModeCount, setDevModeCount] = useState<number>(0)
 
-
-    const notifyNewRound = () => {
-        if (calculateWhosTurn().team === 'red') {
-            toast.error(`Runda ${turn}: ${calculateWhosTurn().user} mora ${calculateWhosTurn().role === 'op' ? 'odkriti kartice' : 'dati namig'}`)
+    const notifyNewRound = (user: {name: string; team: string;}, clue?: string) => {
+        const usr = calculateWhosTurn(turn+1)
+        if (turn === 0) {
+            toast.info(`Začetek igre! ${usr.user} mora dati namig.`)
+            return
+        }
+        if (usr.team === 'red') {
+            toast.error((clue ? `Namig: ${clue}! ` : `Konec runde! `) + `${usr.user} mora ${clue ? 'odkriti kartice' : 'dati namig.'}`)
         } else {
-            toast.info(`Runda ${turn}: ${calculateWhosTurn().user} mora ${calculateWhosTurn().role === 'op' ? 'odkriti kartice' : 'dati namig'}`)
+            toast.info((clue ? `Namig: ${clue}! ` : `Konec runde! `) + `${usr.user} mora ${clue ? 'odkriti kartice' : 'dati namig.'}`)
         }
     };
     const notifyGameEnd = (team: string) => {
@@ -116,8 +116,8 @@ export default function Game() {
     const generateCards = () => {
         const typeArray = [
             GameCardType.RED,GameCardType.RED,GameCardType.RED,GameCardType.RED,GameCardType.RED,GameCardType.RED,GameCardType.RED,GameCardType.RED,
-            GameCardType.BLUE,GameCardType.BLUE,GameCardType.BLUE,GameCardType.BLUE,GameCardType.BLUE,GameCardType.BLUE,GameCardType.BLUE,GameCardType.BLUE,
-            GameCardType.NEUTRAL,GameCardType.NEUTRAL,GameCardType.NEUTRAL,GameCardType.NEUTRAL,GameCardType.NEUTRAL,GameCardType.NEUTRAL,GameCardType.NEUTRAL,GameCardType.NEUTRAL,
+            GameCardType.BLUE,GameCardType.BLUE,GameCardType.BLUE,GameCardType.BLUE,GameCardType.BLUE,GameCardType.BLUE,GameCardType.BLUE,GameCardType.BLUE,GameCardType.BLUE,
+            GameCardType.NEUTRAL,GameCardType.NEUTRAL,GameCardType.NEUTRAL,GameCardType.NEUTRAL,GameCardType.NEUTRAL,GameCardType.NEUTRAL,GameCardType.NEUTRAL,
             GameCardType.DEATH
         ]
 
@@ -138,7 +138,7 @@ export default function Game() {
         publishMessage('game-board', JSON.stringify(shuffledCards))
     }
 
-    const openCard = (index: number, userTeam: string) => {
+    const openCard = (index: number, user: {name: string; team: string;}) => {
         const newGameCards = JSON.parse(JSON.stringify(gameCards))
         newGameCards[index].opened = true
         setGameCards(newGameCards)
@@ -147,21 +147,21 @@ export default function Game() {
             if (redTeamCardsLeft-1 === 0) {
                 endGame('red')
             }
-            if (userTeam !== 'red') {
-                nextTurn()
+            if (user.team !== 'red') {
+                nextTurn(user)
             }
         } else if (newGameCards[index].type === GameCardType.BLUE) {
             setBlueTeamCardsLeft(blueTeamCardsLeft-1)
             if (blueTeamCardsLeft-1 === 0) {
                 endGame('blue')
             }
-            if (userTeam !== 'blue') {
-                nextTurn()
+            if (user.team !== 'blue') {
+                nextTurn(user)
             }
         } else if (newGameCards[index].type === GameCardType.NEUTRAL) {
-            nextTurn()
+            nextTurn(user)
         } else if (newGameCards[index].type === GameCardType.DEATH) {
-            endGame(userTeam === 'red' ? 'blue' : 'red')
+            endGame(user.team === 'red' ? 'blue' : 'red')
         }
     }
 
@@ -181,8 +181,8 @@ export default function Game() {
         }
     }
 
-    const calculateWhosTurn = (): { user: string, team: string, role: string } => {
-        const turnRemainder = turn % 4
+    const calculateWhosTurn = (trn: number = turn): { user: string, team: string, role: string } => {
+        const turnRemainder = trn % 4
         switch (turnRemainder) {
             case 1:
                 return { user: blueSpy, team: 'blue', role: 'spy' }
@@ -224,10 +224,11 @@ export default function Game() {
         setPageState('game')
     }
 
-    const nextTurn = () => {
+    const nextTurn = (user: {name: string; team: string;}, clue?: string) => {
         const newTurn = turn + 1
         setTurn(Number(newTurn))
         setMyTurn(calculateIfMyTurn(newTurn))
+        notifyNewRound(user, clue)
     }
 
     const titleClick = () => {
@@ -308,11 +309,11 @@ export default function Game() {
             case 'game-board':
                 setPageState('game')
                 setGameCards(data)
-                nextTurn()
+                nextTurn({name: blueSpy, team: 'blue'})
                 break
             case 'open-card':
                 if (gameCards[Number(data.cardIndex)].opened) return
-                openCard(Number(data.cardIndex), data.user.team)
+                openCard(Number(data.cardIndex), data.user)
                 setGameLog(
                     [
                         ...gameLog,
@@ -337,10 +338,10 @@ export default function Game() {
                         }
                     ]
                 )
-                nextTurn()
+                nextTurn(data.user, data.item.name)
                 break
             case 'end-turn':
-                nextTurn()
+                nextTurn(data.user)
                 setGameLog(
                     [
                         ...gameLog,
@@ -379,16 +380,9 @@ export default function Game() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [message])
 
-    useEffect(() => {
-        if (turn > 0) {
-            notifyNewRound()
-        }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [turn])
-
     return (
-        <div className={styles.main}>
-            <ToastContainer position="top-center" theme="colored" />
+        <div className={styles.main} style={{ height }}>
+            <ToastContainer position="bottom-left" theme="colored" />
             {pageState === 'lobby' && (
                 <div className={styles.container}>
                     <h1 className={styles.title} onClick={() => titleClick()}>GESLA</h1>
@@ -473,14 +467,24 @@ export default function Game() {
                         {(screenSize === 'mobile' || screenSize === 'xs') &&
                             <>
                             <div className={styles.sidesMobile}>
-                                <Card withBorder radius="md">
+                                <Card className={styles.sideCardWrapper} withBorder radius="md">
                                     <Card.Section className={classes.heading} mt="md">
-                                        <Text size="sm" weight={500}>
-                                            Runda {turn}
-                                        </Text>
+                                        <Group position="apart">
+                                            <Text size="sm" weight={500}>
+                                                Runda {turn}
+                                            </Text>
+                                            <Text>
+                                                <Badge size="md" style={{ background: '#1864ab', margin: '0 5px 0 0' }}>
+                                                    {blueTeamCardsLeft}
+                                                </Badge>
+                                                <Badge size="md" style={{ background: '#c92a2a' }}>
+                                                    {redTeamCardsLeft}
+                                                </Badge>
+                                            </Text>
+                                        </Group>
                                     </Card.Section>
                                     <Card.Section className={classes.section} mt="md">
-                                        <Group position="apart">
+                                        <Group>
                                             <Text size="sm" weight={500}>
                                                 Na potezi
                                             </Text>
@@ -507,7 +511,7 @@ export default function Game() {
                                     />
                                 </div>
                             </div>
-                            <div className={styles.spacer} />
+                            {/* <div className={styles.spacer} /> */}
                             </>
                         }
                     </div>

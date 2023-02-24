@@ -76,6 +76,7 @@
     text-transform: uppercase;
     border-radius: 10px;
     text-align: center;
+    user-select: none;
 }
 
 .overlay {

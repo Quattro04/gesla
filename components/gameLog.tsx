@@ -130,7 +130,6 @@ export default function GameLog({ title, userRole, children, style = {}, gameLog
                     </div>
                 </div>
             </Card.Section>
-            {userRole === 'spy' && (
                 <form className={styles.form} onSubmit={handleSubmit}>
                     <TextInput
                         placeholder="Daj namig"
@@ -139,7 +138,6 @@ export default function GameLog({ title, userRole, children, style = {}, gameLog
                         onChange={(e) => setClue(e.target.value)}
                     />
                 </form>
-            )}
         </Card>
     )
 }
